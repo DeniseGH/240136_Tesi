@@ -9,8 +9,7 @@ from GraphicalModel import CausalGraphicalModel
 from CausalModel import StructuralCausalModel
 from CausalModel import CausalAssignmentModel
 
-TRUE_THETA_MAX = 5
-TRUE_THETA_MIN = -5
+
 
 # Here I changed the theta definition to be a vector instead of a matrix. Basically, since most of the entries
 # of the matrix are zero, we can just consider a "flatter" representation.
@@ -57,7 +56,7 @@ def log_prior(theta, a, b):
 # We consider a "hard" version of the likelihood function. Basically, given the user preferences
 # we assign a positive probability only to those particles which matches **all** the ground truth choices.
 # Basically, in the code below, estimated_result and ground_truth_choice must match always.
-def likelihood(interventions, values_real_scm, estimated_thetas, epsilon=0.1):
+def likelihood(interventions, values_real_scm, estimated_thetas, epsilon=1):
     counter = []
     for intervention, scm_do_real in zip(interventions, values_real_scm):
 
@@ -67,20 +66,21 @@ def likelihood(interventions, values_real_scm, estimated_thetas, epsilon=0.1):
 
         node, value = intervention
 
-        delta_2 = scm_do["x3"].values - scm_do_real["x3"].values
+        delta_2 = np.abs(np.mean(scm_do["x3"].values) - np.mean(scm_do_real["x3"].values))
 
         result = True
         # If the node is "x1", also calculate the difference for x2
         if node == "x1":
-            delta_1 = np.abs(scm_do["x2"].values - scm_do_real["x2"].values)
+            delta_1 = np.abs(np.mean(scm_do["x2"].values) - np.mean(scm_do_real["x2"].values))
 
+            # print("np.mean(delta_1)", np.mean(delta_1))
             # Check if all values in both delta_1 and delta_2 are less than 0.1
-            if not (np.all(delta_1 < epsilon) and np.all(delta_2 < epsilon)):
+            if not ((delta_1 <= epsilon) and (delta_2 <= epsilon)):  # eventualmente si può mettere AND
                 result = False
 
         else:
             # Check if all values in delta_2 are less than 0.1
-            if not np.all(delta_2 < epsilon):
+            if not (delta_2 <= epsilon):
                 result = False
 
         counter.append(result)
@@ -92,7 +92,7 @@ def likelihood(interventions, values_real_scm, estimated_thetas, epsilon=0.1):
 
 
 # We combine the likelihood and the prior in the logposterior.
-def log_posterior_new(thetas, interventions, values_real_scm):
+def log_posterior(thetas, interventions, values_real_scm, TRUE_THETA_MIN, TRUE_THETA_MAX):
     log_lk = likelihood(interventions, values_real_scm, thetas)
     log_lk = np.log(log_lk) if log_lk > 0 else -np.inf
     return log_lk + log_prior(thetas, TRUE_THETA_MIN, TRUE_THETA_MAX)

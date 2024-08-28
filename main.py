@@ -1,7 +1,3 @@
-
-# %% [markdown]
-# # Application
-
 # %%
 import matplotlib.pyplot as plt
 import random
@@ -18,16 +14,15 @@ from CausalModel import StructuralCausalModel
 from CausalModel import CausalAssignmentModel
 
 
-TRUE_THETAS = [-2, 1, 4]
-TRUE_THETA_MAX = 5
-TRUE_THETA_MIN = -5
+TRUE_THETAS = [-0.99, 0.99, 0.99]
+TRUE_THETA_MAX = 1
+TRUE_THETA_MIN = -1
+interventions_num = 10
 
 
 # Set some seed for reproducibility
 np.random.seed(2024)
 
-# %%
-interventions_num = 10
 
 # Basically, we first sample the variable we are going to intervene upon (e.g., x1 or x2)
 # then, we sample the value we want to add to that variable. We sample the value between -1 and 1.
@@ -61,7 +56,6 @@ nwalkers = 50  # Number of particles (they call them walkers)
 nsteps = 100  # Number of steps/iterations.
 
 # Generally, the larger nwalkers and nsteps are, the longer the procedure will take.
-# In Colab, everything runs on a single core, so it is dead slow.
 
 # Increasing also the number of pairwise comparison makes everything even slower.
 # I guess there are ways to speed up the likelihood function, but let's stick with this one for now.
@@ -78,14 +72,14 @@ print("start....")
 start = []
 while (len(start) < nwalkers):
     tmp = np.random.uniform(TRUE_THETA_MIN, TRUE_THETA_MAX, ndim)
-    if np.isfinite(OptimizationProblem.log_posterior_new(tmp, interventions, values_real_scm)):
+    if np.isfinite(OptimizationProblem.log_posterior(tmp, interventions, values_real_scm,TRUE_THETA_MIN, TRUE_THETA_MAX )):
         print(f"FOUND {len(start) + 1}/{nwalkers}")
         start.append(tmp)
 
 
 # %%
 print("sampler....")
-sampler = zeus.EnsembleSampler(nwalkers, ndim, OptimizationProblem.log_posterior_new, args=[interventions, values_real_scm],
+sampler = zeus.EnsembleSampler(nwalkers, ndim, OptimizationProblem.log_posterior, args=[interventions, values_real_scm, TRUE_THETA_MIN, TRUE_THETA_MAX],
                                verbose=True,
                                light_mode=True)  # Initialise the sampler
 sampler.run_mcmc(start, nsteps)  # Run sampling
