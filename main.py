@@ -40,15 +40,23 @@ for i in range(interventions_num):
 print("intervention")
 print(interventions)
 
-# Generate real values of the user after the intervention and store them in a list
-simulation_scm = OptimizationProblem.generate_scm(TRUE_THETAS)
+simulation_scm = generate_scm(TRUE_THETAS)
 values_real_scm = []
-for intervention in (interventions):
-    scm_do_real = OptimizationProblem.intervened_data(simulation_scm, intervention, "soft")
-    values_real_scm.append(scm_do_real)
+for intervention in interventions:
+    means_ = []
+    scm_do_real = intervened_data(simulation_scm, intervention, "soft")
+    node, value = intervention
 
-print("values_real_scm[0]")
-print(values_real_scm[0])
+    mean_2 = np.mean(scm_do_real["x3"].values)
+    if node == "x1":
+        mean_1 = np.mean(scm_do_real["x2"].values)
+
+    means_.append(mean_1)
+    means_.append(mean_2)
+    mean_1 = "no_value"
+    values_real_scm.append(means_)
+
+print(values_real_scm)
 
 # %%
 ndim = 3  # Number of non-zero parameters of the SCM matrix. In our case, it is 3
@@ -138,4 +146,3 @@ for id in range(3):
     sns.kdeplot(estm_data[f"x{id + 1}"], ax=ax[id])
     sns.kdeplot(true_data[f"x{id + 1}"], ls='--', ax=ax[id])
     ax[id].legend([f'$X_{id + 1}$', 'Truth']);
-

@@ -52,7 +52,6 @@ def log_prior(theta, a, b):
         return -np.inf
 
 
-# %%
 # We consider a "hard" version of the likelihood function. Basically, given the user preferences
 # we assign a positive probability only to those particles which matches **all** the ground truth choices.
 # Basically, in the code below, estimated_result and ground_truth_choice must match always.
@@ -66,12 +65,12 @@ def likelihood(interventions, values_real_scm, estimated_thetas, epsilon=1):
 
         node, value = intervention
 
-        delta_2 = np.abs(np.mean(scm_do["x3"].values) - np.mean(scm_do_real["x3"].values))
+        delta_2 = np.abs(np.mean(scm_do["x3"].values) - scm_do_real[1])
 
         result = True
         # If the node is "x1", also calculate the difference for x2
         if node == "x1":
-            delta_1 = np.abs(np.mean(scm_do["x2"].values) - np.mean(scm_do_real["x2"].values))
+            delta_1 = np.abs(np.mean(scm_do["x2"].values) - scm_do_real[0])
 
             # print("np.mean(delta_1)", np.mean(delta_1))
             # Check if all values in both delta_1 and delta_2 are less than 0.1
