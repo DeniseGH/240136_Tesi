@@ -40,11 +40,11 @@ for i in range(interventions_num):
 print("intervention")
 print(interventions)
 
-simulation_scm = generate_scm(TRUE_THETAS)
+simulation_scm = OptimizationProblem.generate_scm(TRUE_THETAS)
 values_real_scm = []
 for intervention in interventions:
     means_ = []
-    scm_do_real = intervened_data(simulation_scm, intervention, "soft")
+    scm_do_real = OptimizationProblem.intervened_data(simulation_scm, intervention, "soft")
     node, value = intervention
 
     mean_2 = np.mean(scm_do_real["x3"].values)
