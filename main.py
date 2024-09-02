@@ -17,7 +17,7 @@ from CausalModel import CausalAssignmentModel
 TRUE_THETAS = [-0.99, 0.99, 0.99]
 TRUE_THETA_MAX = 1
 TRUE_THETA_MIN = -1
-interventions_num = 10
+interventions_num = 20
 
 
 # Set some seed for reproducibility
