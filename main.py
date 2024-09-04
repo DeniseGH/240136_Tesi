@@ -42,19 +42,18 @@ print(interventions)
 
 simulation_scm = OptimizationProblem.generate_scm(TRUE_THETAS)
 values_real_scm = []
+
 for intervention in interventions:
-    means_ = []
-    scm_do_real = OptimizationProblem.intervened_data(simulation_scm, intervention, "soft")
+    scm_do_real = intervened_data(simulation_scm, intervention, "soft")
     node, value = intervention
 
+    mean_1 = np.nan  # Initialize with NaN
     mean_2 = np.mean(scm_do_real["x3"].values)
+
     if node == "x1":
         mean_1 = np.mean(scm_do_real["x2"].values)
 
-    means_.append(mean_1)
-    means_.append(mean_2)
-    mean_1 = "no_value"
-    values_real_scm.append(means_)
+    values_real_scm.append([mean_1, mean_2])
 
 print(values_real_scm)
 
