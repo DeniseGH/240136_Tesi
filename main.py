@@ -103,7 +103,7 @@ fig, ax = plt.subplots(3, 1, figsize=(16, 12))
 # For each node, plot the convergence of the particles
 for id in range(3):
     ax[id].plot(samples[:, :, id], alpha=0.5)
-    ax[id].set_title(f"Convergence for $X_{id + 1}$")
+    ax[id].set_title(f"Convergence for $θ_{id + 1}$")
     ax[id].set_ylim(TRUE_THETA_MIN, TRUE_THETA_MAX)
 plt.show()
 
